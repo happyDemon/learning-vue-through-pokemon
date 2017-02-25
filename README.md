@@ -21,7 +21,7 @@ npm run build
 ## Published articles
 
 #### #1 Single file components
-[link](https://medium.com/@maximkerstens/vue-js-explained-through-pokemon-ac49516ba5d3#.tp1jszxgb)
+[Article](https://medium.com/@maximkerstens/vue-js-explained-through-pokemon-ac49516ba5d3#.tp1jszxgb) | [Branch](https://github.com/happyDemon/learning-vue-through-pokemon/tree/chapter-1)
 
 This tutorial shows how to setup a work flow to use single file components,
 splits the previous code base into 2 components and touches on computed properties.
