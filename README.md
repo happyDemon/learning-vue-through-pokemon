@@ -25,3 +25,8 @@ npm run build
 
 This tutorial shows how to setup a work flow to use single file components,
 splits the previous code base into 2 components and touches on computed properties.
+
+## Roadmap
+ - #2 Attack functionality: $refs, Promisses & simple event bus
+ - #3 Switching it up with Vuex
+ - #4 Transitions & animations
