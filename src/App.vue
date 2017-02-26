@@ -39,21 +39,6 @@
         components: {
             Pokemon
         },
-        mounted(){
-            Vuemit.listen('player.attack', (attackName) => {
-                this.$refs.player.attack(attackName);
-            });
-            Vuemit.listen('opponent.attack', () => {
-                this.$refs.opponent.attack(this.$refs.opponent.pickRandomAttack());
-            });
-            Vuemit.listen('attack.completed', () => {
-                this.battleText = "What will " + this.pokemon.player.name + " do?"
-            });
-            Vuemit.listen('fainted', (pokemonFainted) => {
-                this.battleText = `${pokemonFainted} fainted! Play again?`;
-                this.menu = 'end';
-            });
-        },
         data(){
             return {
                 pokemon: {
@@ -91,6 +76,21 @@
             fightOptions(){
                 return Object.keys(this.pokemon.player.attacks);
             }
+        },
+        mounted(){
+            Vuemit.listen('player.attack', (attackName) => {
+                this.$refs.player.attack(attackName);
+            });
+            Vuemit.listen('opponent.attack', () => {
+                this.$refs.opponent.attack(this.$refs.opponent.pickRandomAttack());
+            });
+            Vuemit.listen('attack.completed', () => {
+                this.battleText = "What will " + this.pokemon.player.name + " do?"
+            });
+            Vuemit.listen('fainted', (pokemonFainted) => {
+                this.battleText = `${pokemonFainted} fainted! Play again?`;
+                this.menu = 'end';
+            });
         },
         methods: {
             processOption(option) {

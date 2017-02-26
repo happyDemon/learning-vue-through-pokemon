@@ -92,7 +92,7 @@
                         // Set HP to 0
                         this.$parent.pokemon[this.opponent].hp = 0;
 
-                        // reject the promise, AKA faint
+                        // Notify the parent that the opponent has fainted
                         Vuemit.fire('fainted', this.$parent.pokemon[this.opponent].name);
                         return;
                     }
@@ -102,6 +102,8 @@
 
                     // Wait a little while for the HP bar animation to end and continue
                     setTimeout(() => {
+                        // If the player just attacked, it's time for the opponent to do the same
+                        // Otherwise we're done with this round.
                         const event = (this.type == 'player') ? 'opponent.attack' : 'attack.completed';
                         Vuemit.fire(event);
                     }, 1000)
