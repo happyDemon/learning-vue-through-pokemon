@@ -26,10 +26,16 @@ npm run build
 This tutorial shows how to setup a work flow to use single file components,
 splits the previous code base into 2 components and touches on computed properties.
 
+
+#### #2 Attack functionality: $refs, Promisses & events
+[Article](https://medium.com/@maximkerstens/vue-js-explained-through-pokemon-2-refs-promises-event-bus-79b705498f0#.kfotzu5wz) | [Promise based implementation](https://github.com/happyDemon/learning-vue-through-pokemon/tree/chapter-2-promisses) | [Event based implementation](https://github.com/happyDemon/learning-vue-through-pokemon/tree/chapter-2-events)
+
+The second installment brings back the attack functionality.
+2 different implementations are discussed to explain $refs, promises & events.
+
 ## Roadmap
 **Note** This can always change in the future
 
- - #2 Attack functionality: $refs, Promisses & simple event bus
  - #3 Switching it up with Vuex
  - #4 Transitions & animations
  - #5 Switching pokemon: vue-router
