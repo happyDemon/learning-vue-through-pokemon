@@ -39,6 +39,21 @@
         components: {
             Pokemon
         },
+        mounted(){
+            Vuemit.listen('player.attack', (attackName) => {
+                this.$refs.player.attack(attackName);
+            });
+            Vuemit.listen('opponent.attack', () => {
+                this.$refs.opponent.attack(this.$refs.opponent.pickRandomAttack());
+            });
+            Vuemit.listen('attack.completed', () => {
+                this.battleText = "What will " + this.pokemon.player.name + " do?"
+            });
+            Vuemit.listen('fainted', (pokemonFainted) => {
+                this.battleText = `${pokemonFainted} fainted! Play again?`;
+                this.menu = 'end';
+            });
+        },
         data(){
             return {
                 pokemon: {
@@ -132,20 +147,7 @@
                 this.pokemon.player.hp = 100;
             },
             processAttack(attackName) {
-                // Perform the player attack
-                new Promise((resolve, reject) => {
-                    this.$refs.player.attack(attackName, resolve, reject);
-                }).then(() => { // Let the opponent attack
-                    return new Promise((resolve, reject) => {
-                        // Choose a random attack and execute it
-                        this.$refs.opponent.attack(this.$refs.opponent.pickRandomAttack(), resolve, reject);
-                    })
-                }).then(() => { // Finally reset the battle text
-                    this.battleText = "What will " + this.pokemon.player.name + " do?"
-                }).catch((pokemonFainted) => { // reset battle on game over
-                    this.battleText = `${pokemonFainted} fainted! Play again?`;
-                    this.menu = 'end';
-                });
+                Vuemit.fire('player.attack', attackName);
             }
         }
     }

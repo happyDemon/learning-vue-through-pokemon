@@ -69,11 +69,11 @@
             /**
              * Performs an attack on the opponent
              */
-            attack(attackName, resolve, reject) {
-                // If the pokemon is not alive, reject the promise, AKA faint
+            attack(attackName) {
+                // If the pokemon is not alive, call faint
                 if(!this.alive)
                 {
-                    reject(this.pokemon.name);
+                    Vuemit.fire('fainted', this.pokemon.name);
                     return;
                 }
 
@@ -93,7 +93,7 @@
                         this.$parent.pokemon[this.opponent].hp = 0;
 
                         // reject the promise, AKA faint
-                        reject(this.$parent.pokemon[this.opponent].name);
+                        Vuemit.fire('fainted', this.$parent.pokemon[this.opponent].name);
                         return;
                     }
 
@@ -102,7 +102,8 @@
 
                     // Wait a little while for the HP bar animation to end and continue
                     setTimeout(() => {
-                        resolve();
+                        const event = (this.type == 'player') ? 'opponent.attack' : 'attack.completed';
+                        Vuemit.fire(event);
                     }, 1000)
                 }, 400)
             },
