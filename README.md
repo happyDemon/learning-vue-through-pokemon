@@ -38,7 +38,8 @@ The second installment brings back the attack functionality.
 
  - #3 Switching it up with Vuex
  - #4 Transitions & animations
- - #5 Switching pokemon: vue-router
- - #6 Expanding on attacks: traditional pokemon battling stats
- - #7 Expanding on attacks: status effects
- - #8 Implementing items
+ - #5 Testing our components
+ - #6 Switching pokemon: vue-router
+ - #7 Expanding on attacks: traditional pokemon battling stats
+ - #8 Expanding on attacks: status effects
+ - #9 Implementing items
