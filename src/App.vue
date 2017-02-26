@@ -78,7 +78,7 @@
             }
         },
         methods: {
-            processOption: function (option) {
+            processOption(option) {
                 switch (option) {
                     case 1:
                         //handle fight
@@ -122,7 +122,7 @@
                         break;
                 }
             },
-            resetBattle: function () {
+            resetBattle() {
                 //reset data to start new game
                 this.menu = 'options';
                 // Use a string literal to nicely render variables in your strings
@@ -130,6 +130,22 @@
                 this.battleText = `What will ${this.pokemon.player.name} do?`;
                 this.pokemon.opponent.hp = 100;
                 this.pokemon.player.hp = 100;
+            },
+            processAttack(attackName) {
+                // Perform the player attack
+                new Promise((resolve, reject) => {
+                    this.$refs.player.attack(attackName, resolve, reject);
+                }).then(() => { // Let the opponent attack
+                    return new Promise((resolve, reject) => {
+                        // Choose a random attack and execute it
+                        this.$refs.opponent.attack(this.$refs.opponent.pickRandomAttack(), resolve, reject);
+                    })
+                }).then(() => { // Finally reset the battle text
+                    this.battleText = "What will " + this.pokemon.player.name + " do?"
+                }).catch((pokemonFainted) => { // reset battle on game over
+                    this.battleText = `${pokemonFainted} fainted! Play again?`;
+                    this.menu = 'end';
+                });
             }
         }
     }

@@ -65,5 +65,60 @@
                 return this.pokemon.hp > 0;
             }
         },
+        methods: {
+            /**
+             * Performs an attack on the opponent
+             */
+            attack(attackName, resolve, reject) {
+                // If the pokemon is not alive, reject the promise, AKA faint
+                if(!this.alive)
+                {
+                    reject(this.pokemon.name);
+                    return;
+                }
+
+                // Change attack text
+                this.$parent.battleText = `${this.pokemon.name} used ${attackName}!`;
+
+
+                // Wait a second to reduce HP
+                setTimeout(() => {
+                    // Get the attack's power
+                    const attackPower = this.pokemon.attacks[attackName];
+
+                    // If the attack power is greater than or equal to the opponents's hp
+                    if(this.$parent.pokemon[this.opponent].hp <= attackPower)
+                    {
+                        // Set HP to 0
+                        this.$parent.pokemon[this.opponent].hp = 0;
+
+                        // reject the promise, AKA faint
+                        reject(this.$parent.pokemon[this.opponent].name);
+                        return;
+                    }
+
+                    // Otherwise reduce HP
+                    this.$parent.pokemon[this.opponent].hp -= attackPower;
+
+                    // Wait a little while for the HP bar animation to end and continue
+                    setTimeout(() => {
+                        resolve();
+                    }, 1000)
+                }, 400)
+            },
+            /**
+             * Return the name of random attack
+             */
+            pickRandomAttack(){
+                // Retrieve all attack names
+                const attacks = Object.keys(this.pokemon.attacks);
+
+                // Pick a random one
+                const attackKey = Math.floor(Math.random() * attacks.length);
+
+                // Return the attack name
+                return attacks[attackKey];
+            }
+        }
     }
 </script>
