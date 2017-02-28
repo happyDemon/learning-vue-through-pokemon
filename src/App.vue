@@ -1,7 +1,7 @@
 <template>
     <div class="battle-scene">
-        <pokemon :pokemon="pokemon.opponent" position="top" type="opponent" ref="opponent"></pokemon>
-        <pokemon :pokemon="pokemon.player" position="bottom" type="player" ref="player"></pokemon>
+        <pokemon position="top" type="opponent" ref="opponent"></pokemon>
+        <pokemon position="bottom" type="player" ref="player"></pokemon>
 
         <div class="bottom-menu">
             <div class="battle-text text-box-left">
@@ -33,6 +33,7 @@
 
 
 <script>
+    import { mapState, mapActions, mapGetters } from 'vuex'
     import Pokemon from './Pokemon.vue';
 
     export default {
@@ -41,41 +42,28 @@
         },
         data(){
             return {
-                pokemon: {
-                    opponent: {
-                        image: "https://img.pokemondb.net/sprites/black-white/anim/normal/onix.gif",
-                        name: 'Onyx',
-                        hp: 100,
-                        level: 50,
-                        attacks: {
-                            "Tackle": 15,
-                            "Iron Tail": 40,
-                            "Rock Slide": 50,
-                            "Slam": 25
-                        }
-                    },
-                    player: {
-                        image: "https://img.pokemondb.net/sprites/black-white/anim/back-normal/charizard.gif",
-                        name: 'Charizard',
-                        hp: 100,
-                        level: 50,
-                        attacks: {
-                            "Scratch": 15,
-                            "Fly": 40,
-                            "Flamethrower": 50,
-                            "Ember": 25
-                        }
-                    }
-                },
                 battleText: "What will Charizard do?",
                 battleOptions: ["Fight", "Pokemon", "Item", "Run"],
                 menu: 'options',
             };
         },
         computed: {
-            fightOptions(){
-                return Object.keys(this.pokemon.player.attacks);
-            }
+                ...mapState({
+                    player(state) { state.player },
+                    opponent(state) { state.opponent }
+            }),
+                ...mapGetters({
+                    fightOptions: 'player/fightOptions'
+                })
+        },
+        created(){
+            // Set the player pokemon
+            const playerId = Math.floor(Math.random() * this.$store.state.pokedex.length);
+            this.$store.commit('player/setPokemon', playerId);
+
+            // Set the opponent pokemon
+            const opponentId = (playerId == 0) ? 1 : playerId-1;
+            this.$store.commit('opponent/setPokemon', opponentId);
         },
         mounted(){
             Vuemit.listen('player.attack', (attackName) => {
@@ -85,12 +73,14 @@
                 this.$refs.opponent.attack(this.$refs.opponent.pickRandomAttack());
             });
             Vuemit.listen('attack.completed', () => {
-                this.battleText = "What will " + this.pokemon.player.name + " do?"
+                this.battleText = "What will " + this.$store.getters['player/pokemon'].name + " do?"
             });
             Vuemit.listen('fainted', (pokemonFainted) => {
                 this.battleText = `${pokemonFainted} fainted! Play again?`;
                 this.menu = 'end';
             });
+
+            console.log(this.$store)
         },
         methods: {
             processOption(option) {
@@ -106,11 +96,11 @@
 
                         // After 3 second we'll want to revert the text
                         setTimeout(() => {
-                            this.battleText = "What will " + this.pokemon.player.name + " do?"
+                            this.battleText = "What will " + this.player.pokemon.name + " do?"
                         }, 2000);
 
                         // Not implemented
-                        this.battleText = "You're our only hope " + this.pokemon.player.name + "!"
+                        this.battleText = "You're our only hope " + this.player.pokemon.name + "!"
 
                         break;
                     case 3:
@@ -118,7 +108,7 @@
 
                         // After 2 seconds revert the text
                         setTimeout(() => {
-                            this.battleText = "What will " + this.pokemon.player.name + " do?"
+                            this.battleText = "What will " + this.player.pokemon.name + " do?"
                         }, 2000);
 
                         // Not implemented
@@ -129,7 +119,7 @@
 
                         // After 2 seconds revert the text
                         setTimeout(() => {
-                            this.battleText = "What will " + this.pokemon.player.name + " do?"
+                            this.battleText = "What will " + this.player.pokemon.name + " do?"
                         }, 2000);
 
                         // Not implemented
@@ -142,13 +132,16 @@
                 this.menu = 'options';
                 // Use a string literal to nicely render variables in your strings
                 // https://developer.mozilla.org/nl/docs/Web/JavaScript/Reference/Template_literals
-                this.battleText = `What will ${this.pokemon.player.name} do?`;
-                this.pokemon.opponent.hp = 100;
-                this.pokemon.player.hp = 100;
+                this.battleText = `What will ${this.$store.getters['player/pokemon'].name} do?`;
+
+                this.resetPokemon();
             },
             processAttack(attackName) {
                 Vuemit.fire('player.attack', attackName);
-            }
+            },
+            ...mapActions({
+                resetPokemon: 'reset'
+            })
         }
     }
 </script>
