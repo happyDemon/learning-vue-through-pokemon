@@ -1,13 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import PokeDex from './data/pokedex';
+import TypeChart from './data/battle';
+
 Vue.use(Vuex)
 
 
 export default new Vuex.Store({
     state: {
-        pokedex: require('./data/pokedex').default,
-        typeChart: require('./data/battle').default
+        pokedex: PokeDex,
+        typeChart: TypeChart
     },
     actions: {
         // Reset HP after battle
