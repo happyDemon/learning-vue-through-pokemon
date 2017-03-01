@@ -1,5 +1,6 @@
 <template>
     <div class="battle-scene">
+        <!-- No more assigning a pokemon-->
         <pokemon position="top" type="opponent" ref="opponent"></pokemon>
         <pokemon position="bottom" type="player" ref="player"></pokemon>
 
@@ -33,7 +34,7 @@
 
 
 <script>
-    import { mapState, mapActions, mapGetters } from 'vuex'
+    import {mapState, mapMutations, mapGetters} from 'vuex'
     import Pokemon from './Pokemon.vue';
 
     export default {
@@ -42,28 +43,21 @@
         },
         data(){
             return {
-                battleText: "What will Charizard do?",
+                battleText: '',
                 battleOptions: ["Fight", "Pokemon", "Item", "Run"],
                 menu: 'options',
             };
         },
         computed: {
-                ...mapState({
-                    player(state) { state.player },
-                    opponent(state) { state.opponent }
-            }),
-                ...mapGetters({
-                    fightOptions: 'player/fightOptions'
-                })
+            // Get the player from the global state
+            ...mapState(['player']),
+
+            // Get the fight options from the global state
+            ...mapGetters({fightOptions: 'playerAttacks'})
         },
         created(){
-            // Set the player pokemon
-            const playerId = Math.floor(Math.random() * this.$store.state.pokedex.length);
-            this.$store.commit('player/setPokemon', playerId);
-
-            // Set the opponent pokemon
-            const opponentId = (playerId == 0) ? 1 : playerId-1;
-            this.$store.commit('opponent/setPokemon', opponentId);
+            // Select random pokemon
+            this.resetPokemon();
         },
         mounted(){
             Vuemit.listen('player.attack', (attackName) => {
@@ -80,9 +74,13 @@
                 this.menu = 'end';
             });
 
-            console.log(this.$store)
+            this.battleText = `What will ${this.player.pokemon.name} do?`;
         },
         methods: {
+            // Use the reset mutation from the global state
+            ...mapMutations({
+                resetPokemon: 'reset'
+            }),
             processOption(option) {
                 switch (option) {
                     case 1:
@@ -129,19 +127,18 @@
             },
             resetBattle() {
                 //reset data to start new game
-                this.menu = 'options';
-                // Use a string literal to nicely render variables in your strings
-                // https://developer.mozilla.org/nl/docs/Web/JavaScript/Reference/Template_literals
-                this.battleText = `What will ${this.$store.getters['player/pokemon'].name} do?`;
-
                 this.resetPokemon();
+
+                this.menu = 'options';
+
+                // Use a string literal to nicely render    variables in your strings
+                // https://developer.mozilla.org/nl/docs/Web/JavaScript/Reference/Template_literals
+                this.battleText = `What will ${this.player.pokemon.name} do?`;
+
             },
             processAttack(attackName) {
                 Vuemit.fire('player.attack', attackName);
             },
-            ...mapActions({
-                resetPokemon: 'reset'
-            })
         }
     }
 </script>

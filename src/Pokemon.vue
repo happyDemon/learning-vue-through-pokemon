@@ -164,7 +164,7 @@
                 // Return the damage
                 return damage * modifier;
             },
-            // If the attack type is on of the pokemon's types, increase by 50
+            // If the attack type is one of the pokemon's types, increase by half
             calculateStab(attack){
                 return (this.pokemon.type.indexOf(attack.type) > -1) ? 1.5 : 1
             },
