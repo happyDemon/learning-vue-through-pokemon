@@ -86,6 +86,7 @@
             }
         },
         methods: {
+            ...mapMutations(['setHP']),
             /**
              * Performs an attack on the opponent
              */
@@ -100,7 +101,7 @@
                 this.$parent.battleText = `${this.local.pokemon.name} used ${attackName}!`;
 
 
-                // Wait a second to reduce HP
+                // Wait .4 second to attack
                 setTimeout(() => {
                     // Get the attack's power
                     const attackPower = this.calculateDamage(attackName);
@@ -108,7 +109,7 @@
                     // If the attack power is greater than or equal to the opponents's hp
                     if (this.opponent.hp <= attackPower) {
                         // Set HP to 0
-                        this.$store.commit('setHP', {type: this.otherPokemon, hp: 0});
+                        this.setHP({type: this.otherPokemon, hp: 0});
 
                         // Notify the parent that the opponent has fainted
                         Vuemit.fire('fainted', this.opponent.pokemon.name);
@@ -116,7 +117,7 @@
                     }
 
                     // Otherwise reduce HP
-                    this.$store.commit('setHP', {type: this.otherPokemon, hp: this.opponent.hp - attackPower});
+                    this.setHP({type: this.otherPokemon, hp: this.opponent.hp - attackPower});
 
                     // Wait a little while for the HP bar animation to end and continue
                     setTimeout(() => {
@@ -131,7 +132,7 @@
              * Return the name of random attack
              */
             pickRandomAttack(){
-                const fightOptions = this.$store.getters[this.type + '/fightOptions'];
+                const fightOptions = this.$store.getters[this.type + 'Attacks'];
 
                 // Pick a random attack
                 const attackKey = Math.floor(Math.random() * fightOptions.length);
