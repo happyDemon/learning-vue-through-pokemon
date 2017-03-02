@@ -43,7 +43,7 @@
         computed: {
             hpBarStyle(){
                 // Calculate the percentage of HP
-                const HPBarPercentage = (this.current.pokemon.hp / this.current.pokemon.stats.hp) * 100;
+                const HPBarPercentage = (this.local.pokemon.hp / this.local.pokemon.stats.hp) * 100;
 
                 // Show red
                 let color = '#FF0061';
@@ -64,25 +64,23 @@
                 }
             },
             alive(){
-                return this.current.pokemon.hp > 0;
+                return this.local.pokemon.hp > 0;
             },
-                ...mapState({
-                    current: state => { state[this.type]},
-                    opponent: state => { state[this.otherPokemon]}
-                }),
-            pokemon(){
-                return this.$store.getters[this.type + '/pokemon'];
-            },
-            opponent(){
-                return this.$store.getters[this.otherPokemon + '/pokemon'];
-            },
+            ...mapState({
+                local: state => {
+                    state[this.type]
+                },
+                opponent: state => {
+                    state[this.otherPokemon]
+                }
+            }),
             image(){
                 switch (this.type) {
                     case 'player':
-                        return this.current.pokemon.images.back;
+                        return this.local.pokemon.images.back;
                         break;
                     case 'opponent':
-                        return this.current.pokemon.images.front;
+                        return this.local.pokemon.images.front;
                         break;
                 }
             }
@@ -94,12 +92,12 @@
             attack(attackName) {
                 // If the pokemon is not alive, call faint (failsafe)
                 if (!this.alive) {
-                    Vuemit.fire('fainted', this.current.pokemon.name);
+                    Vuemit.fire('fainted', this.local.pokemon.name);
                     return;
                 }
 
                 // Change attack text
-                this.$parent.battleText = `${this.current.pokemon.name} used ${attackName}!`;
+                this.$parent.battleText = `${this.local.pokemon.name} used ${attackName}!`;
 
 
                 // Wait a second to reduce HP
@@ -110,7 +108,7 @@
                     // If the attack power is greater than or equal to the opponents's hp
                     if (this.opponent.hp <= attackPower) {
                         // Set HP to 0
-                        this.$store.commit('setHP', {id: this.$store.state[this.otherPokemon].id, hp: 0});
+                        this.$store.commit('setHP', {type: this.otherPokemon, hp: 0});
 
                         // Notify the parent that the opponent has fainted
                         Vuemit.fire('fainted', this.opponent.pokemon.name);
@@ -118,7 +116,7 @@
                     }
 
                     // Otherwise reduce HP
-                    this.$store.commit('setHP', {id: this.$store.state[this.otherPokemon].id, hp: this.opponent.hp-attackPower});
+                    this.$store.commit('setHP', {type: this.otherPokemon, hp: this.opponent.hp - attackPower});
 
                     // Wait a little while for the HP bar animation to end and continue
                     setTimeout(() => {
@@ -133,7 +131,7 @@
              * Return the name of random attack
              */
             pickRandomAttack(){
-                const fightOptions = this.$store.getters[this.type+'/fightOptions'];
+                const fightOptions = this.$store.getters[this.type + '/fightOptions'];
 
                 // Pick a random attack
                 const attackKey = Math.floor(Math.random() * fightOptions.length);
@@ -142,13 +140,13 @@
                 return fightOptions[attackKey];
             },
             calculateDamage(attackName) {
-                const attack = this.current.pokemon.attacks[attackName];
+                const attack = this.local.pokemon.attacks[attackName];
 
                 // Calculate base power based on the pokemon's level
-                const levelPowerbase = (2 * (this.current.pokemon.stats.level + 10)) / 250;
+                const levelPowerbase = (2 * (this.local.pokemon.stats.level + 10)) / 250;
 
                 // Calculate the attack power based on stats
-                const statPowerbase = this.current.pokemon.stats.attack * (attack.power / this.opponent.stats.defense);
+                const statPowerbase = this.local.pokemon.stats.attack * (attack.power / this.opponent.stats.defense);
 
                 // Raw damage
                 const damage = (levelPowerbase * statPowerbase) + 2;
@@ -171,7 +169,7 @@
             },
             // If the attack type is one of the pokemon's types, increase by half
             calculateStab(attack){
-                return (this.current.pokemon.type.indexOf(attack.type) > -1) ? 1.5 : 1
+                return (this.local.pokemon.type.indexOf(attack.type) > -1) ? 1.5 : 1
             },
             // Calculate the effectiveness of the attack based on the opponent pokemon type
             calculateTypeEffect(attack)
