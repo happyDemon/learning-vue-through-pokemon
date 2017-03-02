@@ -22,7 +22,7 @@ export default new Vuex.Store({
         // Retrieve a list of attack names from the opponent
         // $store.getters.opponentAttacks
         opponentAttacks(state) {
-            return Object.keys(state.player.pokemon.attacks);
+            return Object.keys(state.opponent.pokemon.attacks);
         },
         // Retrieve a list of attack names from the player
         // $store.getters.playerAttacks
@@ -51,9 +51,11 @@ export default new Vuex.Store({
             state.player.pokemon = state.pokedex[pokedexId];
             state.player.hp = state.pokedex[pokedexId].stats.hp;
         },
+    },
+    actions: {
         // Reset a battle, this means choosing new pokemon with ful HP
-        // commit('reset')
-        reset({state, commit}) {
+        // dispatch('reset')
+        reset({commit, state}) {
             // Build an array with all the pokedex keys
             let pokedexKeys = [];
             for(let i=0; i<state.pokedex.length;i++)
@@ -63,14 +65,14 @@ export default new Vuex.Store({
 
             // Select a random pokedex entry & set the player pokemon
             const playerPokemonId = Math.floor(Math.random() * pokedexKeys.length)
-            commit('setPlayerPokemon', playerPokemonId);
+            commit('setPlayerPokemon', pokedexKeys[playerPokemonId]);
 
             // Remove the selected key
             pokedexKeys.splice(playerPokemonId, 1);
 
             // Select a random pokedex entry & set the opponent pokemon
             const opponentPokemonId = Math.floor(Math.random() * pokedexKeys.length)
-            commit('setOpponentPokemon', opponentPokemonId);
+            commit('setOpponentPokemon', pokedexKeys[opponentPokemonId]);
         }
-    },
+    }
 });

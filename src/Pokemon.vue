@@ -4,11 +4,11 @@
             <img :id="pokemonImageId" v-if="alive" :src="image" class="pokemon-bottom"/>
         </div>
         <div :class="boxClass">
-            <h2 class="pokemon">{{pokemon.name}}</h2>
+            <h2 class="pokemon">{{local.pokemon.name}}</h2>
             <div :class="hpBarClass">
                 <div :style="hpBarStyle" class="hp-bar-fill"></div>
             </div>
-            <h4 class="level">Lvl. {{pokemon.stats.level}}</h4>
+            <h4 class="level">Lvl. {{local.pokemon.stats.level}}</h4>
         </div>
     </div>
 </template>
@@ -43,7 +43,7 @@
         computed: {
             hpBarStyle(){
                 // Calculate the percentage of HP
-                const HPBarPercentage = (this.local.pokemon.hp / this.local.pokemon.stats.hp) * 100;
+                const HPBarPercentage = (this.local.hp / this.local.pokemon.stats.hp) * 100;
 
                 // Show red
                 let color = '#FF0061';
@@ -67,11 +67,13 @@
                 return this.local.pokemon.hp > 0;
             },
             ...mapState({
-                local: state => {
-                    state[this.type]
+                local(state) {
+                    console.log(state, this.type);
+                    return state[this.type]
                 },
-                opponent: state => {
-                    state[this.otherPokemon]
+                opponent(state) {
+                    console.log(state, this.otherPokemon);
+                    return state[this.otherPokemon]
                 }
             }),
             image(){
@@ -80,7 +82,7 @@
                         return this.local.pokemon.images.back;
                         break;
                     case 'opponent':
-                        return this.local.pokemon.images.front;
+                          return this.local.pokemon.images.front;
                         break;
                 }
             }
@@ -141,93 +143,9 @@
                 return fightOptions[attackKey];
             },
             calculateDamage(attackName) {
-                const attack = this.local.pokemon.attacks[attackName];
-
-                // Calculate base power based on the pokemon's level
-                const levelPowerbase = (2 * (this.local.pokemon.stats.level + 10)) / 250;
-
-                // Calculate the attack power based on stats
-                const statPowerbase = this.local.pokemon.stats.attack * (attack.power / this.opponent.stats.defense);
-
-                // Raw damage
-                const damage = (levelPowerbase * statPowerbase) + 2;
-
-                // Get the type modifier
-                const typeEffect = this.calculateTypeEffect(attack);
-
-                // The attack has no effect
-                if (typeEffect == 0)
-                    return 0;
-
-                // Randomise the result
-                const random = Math.floor(Math.random() * (100 - 85 + 1) + 85) / 100;
-
-                // build the modifier
-                const modifier = this.calculateStab(attack) * random * typeEffect;
-
-                // Return the damage
-                return damage * modifier;
+                console.log( this.local.pokemon.attacks, attackName)
+                return this.local.pokemon.attacks[attackName].power;
             },
-            // If the attack type is one of the pokemon's types, increase by half
-            calculateStab(attack){
-                return (this.local.pokemon.type.indexOf(attack.type) > -1) ? 1.5 : 1
-            },
-            // Calculate the effectiveness of the attack based on the opponent pokemon type
-            calculateTypeEffect(attack)
-            {
-                const typeChart = this.$store.state.typeChart;
-
-                // If we haven't defined the effectiveness
-                if (typeof typeChart[attack.type] == 'undefined')
-                    return 1;
-
-                let effect = 0;
-                let noEffect = false;
-
-                this.opponent.type.forEach((type) => {
-                    // If we have the attack type charted
-                    if (typeof typeChart[attack.type].attack[type] != 'undefined') {
-                        // Get the effectiveness from the chart
-                        switch (typeChart[attack.type].attack[type]) {
-                                // Not very effective
-                            case -.5:
-                                // Only half the attack
-                                if (effect == 0) {
-                                    effect = .5;
-                                }
-                                // just add
-                                else {
-                                    effect += typeChart[attack.type].attack[type];
-                                }
-                                break;
-                                // Very effective
-                            case 2:
-                                // Just add
-                                if (effect != .5) {
-                                    effect += typeChart[attack.type].attack[type];
-                                }
-                                // remove the half
-                                else {
-                                    effect = 1.5;
-                                }
-                                break;
-                                // Seems like it won't have any effect
-                            case 0:
-                                noEffect = true;
-                                break;
-                        }
-                    }
-                });
-
-                if (noEffect)
-                    return 0;
-
-                // Normal attack
-                if (effect == 0)
-                    return 1;
-
-                return effect;
-            }
         }
     }
 </script>

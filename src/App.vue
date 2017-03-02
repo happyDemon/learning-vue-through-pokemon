@@ -34,7 +34,7 @@
 
 
 <script>
-    import {mapState, mapMutations, mapGetters} from 'vuex'
+    import {mapState, mapActions, mapGetters} from 'vuex'
     import Pokemon from './Pokemon.vue';
 
     export default {
@@ -60,6 +60,7 @@
             this.resetPokemon();
         },
         mounted(){
+            //this.resetPokemon();
             Vuemit.listen('player.attack', (attackName) => {
                 this.$refs.player.attack(attackName);
             });
@@ -78,7 +79,7 @@
         },
         methods: {
             // Use the reset mutation from the global state
-            ...mapMutations({
+            ...mapActions({
                 resetPokemon: 'reset'
             }),
             processOption(option) {
