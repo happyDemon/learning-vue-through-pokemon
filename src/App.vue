@@ -68,7 +68,7 @@
                 this.$refs.opponent.attack(this.$refs.opponent.pickRandomAttack());
             });
             Vuemit.listen('attack.completed', () => {
-                this.battleText = "What will " + this.$store.getters['player/pokemon'].name + " do?"
+                this.battleText = `What will ${this.player.pokemon.name} do?`;
             });
             Vuemit.listen('fainted', (pokemonFainted) => {
                 this.battleText = `${pokemonFainted} fainted! Play again?`;
@@ -95,11 +95,11 @@
 
                         // After 3 second we'll want to revert the text
                         setTimeout(() => {
-                            this.battleText = "What will " + this.player.pokemon.name + " do?"
+                            this.battleText = `What will ${this.player.pokemon.name} do?`;
                         }, 2000);
 
                         // Not implemented
-                        this.battleText = "You're our only hope " + this.player.pokemon.name + "!"
+                        this.battleText = `You're our only hope ${this.player.pokemon.name} !`;
 
                         break;
                     case 3:
@@ -107,7 +107,7 @@
 
                         // After 2 seconds revert the text
                         setTimeout(() => {
-                            this.battleText = "What will " + this.player.pokemon.name + " do?"
+                            this.battleText = `What will ${this.player.pokemon.name} do?`;
                         }, 2000);
 
                         // Not implemented
@@ -118,7 +118,7 @@
 
                         // After 2 seconds revert the text
                         setTimeout(() => {
-                            this.battleText = "What will " + this.player.pokemon.name + " do?"
+                            this.battleText = `What will ${this.player.pokemon.name} do?`;
                         }, 2000);
 
                         // Not implemented

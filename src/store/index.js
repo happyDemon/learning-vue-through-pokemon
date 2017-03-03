@@ -3,7 +3,9 @@ import Vuex from 'vuex'
 Vue.use(Vuex);
 
 // Retrieve the pokedex
-import PokeDex from './data/pokedex';
+import PokeDex from '../data/pokedex';
+
+Vue.use(Vuex)
 
 export default new Vuex.Store({
     // Define the state

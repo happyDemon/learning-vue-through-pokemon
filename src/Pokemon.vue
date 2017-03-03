@@ -15,6 +15,8 @@
 
 <script>
     import {mapState, mapMutations, mapGetters} from 'vuex'
+    import Damage from './Damage';
+
     export default {
         props: ['position', 'type'],
         data(){
@@ -68,11 +70,9 @@
             },
             ...mapState({
                 local(state) {
-                    console.log(state, this.type);
                     return state[this.type]
                 },
                 opponent(state) {
-                    console.log(state, this.otherPokemon);
                     return state[this.otherPokemon]
                 }
             }),
@@ -143,8 +143,11 @@
                 return fightOptions[attackKey];
             },
             calculateDamage(attackName) {
-                console.log( this.local.pokemon.attacks, attackName)
-                return this.local.pokemon.attacks[attackName].power;
+                const attack = this.local.pokemon.attacks[attackName];
+
+                const damage = new Damage(attack, this.local.pokemon, this.opponent.pokemon);
+
+                return damage.power();
             },
         }
     }
