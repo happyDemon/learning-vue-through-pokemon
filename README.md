@@ -33,13 +33,17 @@ splits the previous code base into 2 components and touches on computed properti
 The second installment brings back the attack functionality.
 2 different implementations are discussed to explain $refs, promises & events.
 
+#### #3 Implementing Vuex
+[Article](https://medium.com/@maximkerstens/vue-js-explained-through-pokemon-b4779c83b245#.6juxdzpc9) | [Branch](https://github.com/happyDemon/learning-vue-through-pokemon/tree/chapter-3)
+
+In this tutorial we're separating our state into a global state store.
+
 ## Roadmap
 **Note** This can always change in the future
 
- - #3 Switching it up with Vuex
- - #4 Transitions & animations
- - #5 Testing our components
- - #6 Switching pokemon: vue-router
- - #7 Expanding on attacks: traditional pokemon battling stats
- - #8 Expanding on attacks: status effects
- - #9 Implementing items
+ - Transitions & animations
+ - Testing our components
+ - Switching pokemon: vue-router
+ - Expanding on attacks: traditional pokemon battling stats
+ - Expanding on attacks: status effects
+ - Implementing items
