@@ -43,10 +43,14 @@ In this tutorial we're separating our state into a global state store.
 
 Traditional pokemon attack damage calculations gets discussed in this article, we implement this through a Damage class.
 
+#### #5 Transition & animation
+[Article](https://medium.com/@maximkerstens/vue-js-explained-through-pokemon-5-transitions-animation-7bfc70e01d3d#.2moivnuef) | [Branch](https://github.com/happyDemon/learning-vue-through-pokemon/tree/chapter-5)
+
+Let's make use of Vue transition when pokemon appear/faint and add some textual info when an attack is, for example, super effective through resuable transition.
+
 ## Roadmap
 **Note** This can always change in the future
 
- - Transitions & animations
  - Testing our components
  - Switching pokemon: vue-router
  - Expanding on attacks: status effects
