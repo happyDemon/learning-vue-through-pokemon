@@ -233,6 +233,17 @@
         right: 8%;
         background: #E0E0E0;
     }
+    .box-top-right div.battle-effectiveness {
+        position: absolute;
+        z-index: 1;
+        left: 26px;
+        width: 200px;
+        text-align: center;
+        top: -50px;
+        font-family: monospace;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
 
     .pokemon-top {
         height: 150%;
@@ -258,6 +269,17 @@
         bottom: 15%;
         left: 8%;
         background: #E0E0E0;
+    }
+    .box-bottom-left div.battle-effectiveness {
+        position: absolute;
+        z-index: 1;
+        left: 26px;
+        width: 200px;
+        text-align: center;
+        top: -65px;
+        font-family: monospace;
+        font-size: 1.2em;
+        font-weight: bold;
     }
 
     .box-bottom-right {

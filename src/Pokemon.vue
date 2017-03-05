@@ -1,7 +1,34 @@
+<style>
+    .pokemon-image-enter-active {
+        transition: all .5s ease;
+    }
+
+    .pokemon-image-leave-active {
+        transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+
+    /*  */
+    .pokemon-image-enter {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    .pokemon-image-leave-to {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+</style>
 <template>
     <div>
         <div :class="hpBoxClass">
-            <img :id="pokemonImageId" v-if="alive" :src="image" class="pokemon-bottom"/>
+            <transition-attack>
+                <div v-if="attackEffect" class="battle-effectiveness">
+                    {{attackEffect}}
+                </div>
+            </transition-attack>
+            <transition appear name="pokemon-image">
+                <img :id="pokemonImageId" v-if="alive" :src="image" class="pokemon-bottom"/>
+            </transition>
         </div>
         <div :class="boxClass">
             <h2 class="pokemon">{{local.pokemon.name}}</h2>
@@ -20,6 +47,7 @@
     export default {
         props: ['position', 'type'],
         data(){
+            const effectTypeClass = this.type + '-effect';
             return {
                 // Inverse pokemon type
                 otherPokemon: this.type == 'player' ? 'opponent' : 'player',
@@ -39,7 +67,9 @@
                 hpBarClass: {
                     'hp-bar-top': this.position == 'top',
                     'hp-bar-bottom': this.position == 'bottom',
-                }
+                },
+                attackEffect: false,
+                attackEffectQueue: []
             };
         },
         computed: {
@@ -66,7 +96,7 @@
                 }
             },
             alive(){
-                return this.local.pokemon.hp > 0;
+                return this.local.hp > 0;
             },
             ...mapState({
                 local(state) {
@@ -82,10 +112,29 @@
                         return this.local.pokemon.images.back;
                         break;
                     case 'opponent':
-                          return this.local.pokemon.images.front;
+                        return this.local.pokemon.images.front;
                         break;
                 }
             }
+        },
+        watch: {
+            attackEffect(value, oldValue)
+            {
+                // If the battleEffect has been reset and we've got another one waiting in our queue
+                if(value === false && this.attackEffectQueue.length > 0)
+                {
+                    // Show the effect from the queue
+                    this.showAttackEffect(this.attackEffectQueue[0]);
+
+                    // Remove the effect from the queue
+                    this.attackEffectQueue.splice(0,1);
+                }
+            }
+        },
+        mounted(){
+            Vuemit.listen(this.type+'.attack.effective', (effect) => {
+                this.showAttackEffect(effect);
+            });
         },
         methods: {
             ...mapMutations(['setHP']),
@@ -99,14 +148,23 @@
                     return;
                 }
 
+                // Show that the current pokemon is attacking
+                Velocity(document.getElementById(this.pokemonImageId), 'callout.pulse');
+
                 // Change attack text
                 this.$parent.battleText = `${this.local.pokemon.name} used ${attackName}!`;
 
 
                 // Wait .4 second to attack
                 setTimeout(() => {
+
                     // Get the attack's power
                     const attackPower = this.calculateDamage(attackName);
+
+                    if (attackPower > 0) {
+                        // Show that the opponnet is receiving damage
+                        Velocity(document.getElementById(this.otherPokemon + '-pokemon'), 'callout.bounce');
+                    }
 
                     // If the attack power is greater than or equal to the opponents's hp
                     if (this.opponent.hp <= attackPower) {
@@ -147,8 +205,25 @@
 
                 const damage = new Damage(attack, this.local.pokemon, this.opponent.pokemon);
 
-                return damage.power();
+                return damage.power(this.otherPokemon);
             },
+            showAttackEffect(effect)
+            {
+                // If there's already an attack effect, queue it
+                if(this.attackEffect != false)
+                {
+                    this.attackEffectQueue.push(effect);
+                    return;
+                }
+
+                // Show attack effect
+                this.attackEffect = effect;
+
+                // Reset the attack effect
+                setTimeout(() => {
+                    this.attackEffect = false;
+                }, 800)
+            }
         }
     }
 </script>

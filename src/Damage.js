@@ -9,8 +9,8 @@ export default class Damage {
         this.typeChart = TypeChart;
     }
 
-    power() {
-        return Math.floor(this.calculateStatsPower() * this.calculateStab() * this.calculateTypeEffect() * this.calculateCritical() * this.calculateOther() * this.getRandomFactor())
+    power(otherPokemonType) {
+        return Math.floor(this.calculateStatsPower() * this.calculateStab() * this.calculateTypeEffect(otherPokemonType) * this.calculateCritical(otherPokemonType) * this.calculateOther() * this.getRandomFactor())
     }
 
     calculateStatsPower() {
@@ -36,18 +36,16 @@ export default class Damage {
     }
 
     // Consult the type chart and build a multiplier
-    calculateTypeEffect() {
+    calculateTypeEffect(otherPokemonType) {
         // If we haven't defined the type in the typeChart return normal damage
         if (typeof this.typeChart[this.attack.type] == 'undefined')
             return 1;
 
         // Here we'll build the multiplier in
-        let effect = 0;
+        let effectTotal = 1;
 
         // In case of immune we'll just set this to true
         let noEffect = false;
-
-        console.log(this.typeChart[this.attack.type]);
 
         // Let's loop over every type the defending pokemon has
         this.defending.type.forEach((type) => {
@@ -63,32 +61,19 @@ export default class Damage {
                     switch(effect)
                     {
                         case 'immunes':
-                            console.log('immune');
                             noEffect = true;
+                            effectTotal = 0;
                             break;
                         // Reduce the attack's damage
                         case 'weaknesses':
-                            console.log('weak')
-                            // Only half the attack
-                            if (effect == 0) {
-                                effect = .5;
-                            }
-                            // remove half from an existing effect
-                            else {
-                                effect -= 0.5;
-                            }
+                            effectTotal = effectTotal * 0.5;
                             break;
                         // Increase the attack's effect
                         case 'strengths':
-                            console.log('super effective');
-                            // Just add the double attack
-                            if (effect != .5) {
-                                effect += 2;
-                            }
-                            // remove the half
-                            else {
-                                effect = 1.5;
-                            }
+                            if(effectTotal < 2)
+                                effectTotal = effectTotal * 2;
+                            else
+                                effectTotal = 2;
                             break;
                     }
                 }
@@ -96,24 +81,32 @@ export default class Damage {
         });
 
         // Defending pokemon is immune
-        if (noEffect)
+        if (noEffect || effectTotal == 0)
+        {
+            Vuemit.fire(otherPokemonType+'.attack.effective', 'Had no effect');
             return 0;
+        }
 
-        // Normal attack
-        if (effect == 0)
-            return 1;
+        if(effectTotal == 0.5)
+        {
+            Vuemit.fire(otherPokemonType+'.attack.effective', 'Not very effective');
+        }
+        else if(effectTotal > 1)
+        {
+            Vuemit.fire(otherPokemonType+'.attack.effective', 'Very effective');
+        }
 
         // Return the multiplier
-        return effect;
+        return effectTotal;
     }
 
-    calculateCritical() {
+    calculateCritical(otherPokemonType) {
         const random = Math.floor(Math.random() * 255);
         const probability = (this.attack.type == 'normal') ? this.attacking.stats.speed / 512 : this.attacking.stats.speed / 256;
 
         // Seems like we've got a critical hit
         if (random < probability) {
-            console.log('Critical hit');
+            Vuemit.fire(otherPokemonType+'.attack.effective', 'Critical hit!');
             // Lower leveled pokemon will have a smaller percentage of bonus
             return ((this.attacking.stats.level * 2) + 5) / (this.attacking.stats.level + 5);
         }
