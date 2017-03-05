@@ -38,12 +38,16 @@ The second installment brings back the attack functionality.
 
 In this tutorial we're separating our state into a global state store.
 
+#### #4 Damage calculations
+[Article](https://medium.com/@maximkerstens/vue-js-explained-through-pokemon-4-damage-calculations-a3065f0b1761#.twd8m3akg) | [Branch](https://github.com/happyDemon/learning-vue-through-pokemon/tree/chapter-4)
+
+Traditional pokemon attack damage calculations gets discussed in this article, we implement this through a Damage class.
+
 ## Roadmap
 **Note** This can always change in the future
 
  - Transitions & animations
  - Testing our components
  - Switching pokemon: vue-router
- - Expanding on attacks: traditional pokemon battling stats
  - Expanding on attacks: status effects
  - Implementing items
